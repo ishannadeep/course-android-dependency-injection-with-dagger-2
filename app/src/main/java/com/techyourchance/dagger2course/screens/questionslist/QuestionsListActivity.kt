@@ -7,10 +7,9 @@ import com.techyourchance.dagger2course.Constants
 import com.techyourchance.dagger2course.networking.StackoverflowApi
 import com.techyourchance.dagger2course.questions.FetchQuestionsUseCase
 import com.techyourchance.dagger2course.questions.Question
+import com.techyourchance.dagger2course.screens.common.ScreensNavigator
 import com.techyourchance.dagger2course.screens.common.dialogs.DialogsNavigator
-import com.techyourchance.dagger2course.screens.common.dialogs.ServerErrorDialogFragment
 import com.techyourchance.dagger2course.screens.common.viewsmvc.QuestionsListViewMVC
-import com.techyourchance.dagger2course.screens.questiondetails.QuestionDetailsActivity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -27,6 +26,7 @@ class QuestionsListActivity : AppCompatActivity(), QuestionsListViewMVC.Listener
     private lateinit var viewMVC: QuestionsListViewMVC
     private lateinit var fetchQuestionsUseCase: FetchQuestionsUseCase
     private lateinit var dialogsNavigator: DialogsNavigator
+    private lateinit var screensNavigator: ScreensNavigator
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,6 +40,7 @@ class QuestionsListActivity : AppCompatActivity(), QuestionsListViewMVC.Listener
         stackoverflowApi = retrofit.create(StackoverflowApi::class.java)
         fetchQuestionsUseCase = FetchQuestionsUseCase()
         dialogsNavigator = DialogsNavigator(supportFragmentManager)
+        screensNavigator = ScreensNavigator(this)
     }
 
     override fun onStart() {
@@ -84,6 +85,6 @@ class QuestionsListActivity : AppCompatActivity(), QuestionsListViewMVC.Listener
     }
 
     override fun onClickItem(question: Question) {
-        QuestionDetailsActivity.start(this, question.id)
+        screensNavigator.navigateToDetail(question)
     }
 }
