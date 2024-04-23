@@ -1,11 +1,9 @@
 package com.techyourchance.dagger2course.screens.common.viewsmvc
 
-import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import androidx.annotation.IdRes
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -15,14 +13,15 @@ import com.techyourchance.dagger2course.questions.Question
 class QuestionsListViewMVC(
     private val layoutInflater: LayoutInflater,
     private val parent: ViewGroup?
+) : BaseViewMVC<QuestionsListViewMVC.Listener>(
+    layoutInflater,
+    parent,
+    R.layout.layout_questions_list
 ) {
     private var swipeRefresh: SwipeRefreshLayout
     private var recyclerView: RecyclerView
     private var questionsAdapter: QuestionsAdapter
-    val rootView: View = layoutInflater.inflate(R.layout.layout_questions_list, parent)
-    private val context: Context get() = rootView.context
     private lateinit var listener: Listener
-    private val listeners = HashSet<Listener>()
 
     public interface Listener {
         fun onClickRefresh()
@@ -46,14 +45,6 @@ class QuestionsListViewMVC(
         recyclerView.adapter = questionsAdapter
     }
 
-    fun registerListeners(listener: Listener) {
-        listeners.add(listener)
-    }
-
-    fun unRegisterListener(listener: Listener) {
-        listeners.remove(listener)
-    }
-
     fun showProgressIndication() {
         swipeRefresh.isRefreshing = true
     }
@@ -62,10 +53,6 @@ class QuestionsListViewMVC(
         if (swipeRefresh.isRefreshing) {
             swipeRefresh.isRefreshing = false
         }
-    }
-
-    fun <T : View?> findViewById(@IdRes id: Int): T {
-        return rootView.findViewById<T>(id)
     }
 
     fun bindQuestions(questions: List<Question>) {

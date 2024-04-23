@@ -48,7 +48,7 @@ class QuestionsListActivity : AppCompatActivity(), QuestionsListViewMVC.Listener
     override fun onStop() {
         super.onStop()
         coroutineScope.coroutineContext.cancelChildren()
-        viewMVC.unRegisterListener(this)
+        viewMVC.unregisterListeners(this)
     }
 
     private fun fetchQuestions() {
