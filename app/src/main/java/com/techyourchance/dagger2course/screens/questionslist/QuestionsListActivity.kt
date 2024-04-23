@@ -7,6 +7,7 @@ import com.techyourchance.dagger2course.Constants
 import com.techyourchance.dagger2course.networking.StackoverflowApi
 import com.techyourchance.dagger2course.questions.FetchQuestionsUseCase
 import com.techyourchance.dagger2course.questions.Question
+import com.techyourchance.dagger2course.screens.common.dialogs.DialogsNavigator
 import com.techyourchance.dagger2course.screens.common.dialogs.ServerErrorDialogFragment
 import com.techyourchance.dagger2course.screens.common.viewsmvc.QuestionsListViewMVC
 import com.techyourchance.dagger2course.screens.questiondetails.QuestionDetailsActivity
@@ -25,6 +26,7 @@ class QuestionsListActivity : AppCompatActivity(), QuestionsListViewMVC.Listener
     private var isDataLoaded = false
     private lateinit var viewMVC: QuestionsListViewMVC
     private lateinit var fetchQuestionsUseCase: FetchQuestionsUseCase
+    private lateinit var dialogsNavigator: DialogsNavigator
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,6 +39,7 @@ class QuestionsListActivity : AppCompatActivity(), QuestionsListViewMVC.Listener
             .build()
         stackoverflowApi = retrofit.create(StackoverflowApi::class.java)
         fetchQuestionsUseCase = FetchQuestionsUseCase()
+        dialogsNavigator = DialogsNavigator(supportFragmentManager)
     }
 
     override fun onStart() {
@@ -73,9 +76,7 @@ class QuestionsListActivity : AppCompatActivity(), QuestionsListViewMVC.Listener
     }
 
     private fun onFetchFailed() {
-        supportFragmentManager.beginTransaction()
-            .add(ServerErrorDialogFragment.newInstance(), null)
-            .commitAllowingStateLoss()
+        dialogsNavigator.showServerError();
     }
 
     override fun onClickRefresh() {

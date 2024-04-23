@@ -9,7 +9,7 @@ import android.view.LayoutInflater
 import androidx.appcompat.app.AppCompatActivity
 import com.techyourchance.dagger2course.Constants
 import com.techyourchance.dagger2course.networking.StackoverflowApi
-import com.techyourchance.dagger2course.screens.common.dialogs.ServerErrorDialogFragment
+import com.techyourchance.dagger2course.screens.common.dialogs.DialogsNavigator
 import com.techyourchance.dagger2course.screens.common.viewsmvc.QuestionDetailsViewMVC
 import kotlinx.coroutines.*
 import retrofit2.Retrofit
@@ -24,6 +24,7 @@ class QuestionDetailsActivity : AppCompatActivity(), QuestionDetailsViewMVC.List
 
     private lateinit var questionId: String
     private lateinit var questionDetailsViewMVC: QuestionDetailsViewMVC
+    private lateinit var dialogsNavigator: DialogsNavigator
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,6 +40,7 @@ class QuestionDetailsActivity : AppCompatActivity(), QuestionDetailsViewMVC.List
 
         // retrieve question ID passed from outside
         questionId = intent.extras!!.getString(EXTRA_QUESTION_ID)!!
+        dialogsNavigator = DialogsNavigator(supportFragmentManager)
     }
 
     override fun onStart() {
@@ -86,9 +88,7 @@ class QuestionDetailsActivity : AppCompatActivity(), QuestionDetailsViewMVC.List
     }
 
     private fun onFetchFailed() {
-        supportFragmentManager.beginTransaction()
-            .add(ServerErrorDialogFragment.newInstance(), null)
-            .commitAllowingStateLoss()
+        dialogsNavigator.showServerError()
     }
 
     companion object {
