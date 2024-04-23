@@ -9,6 +9,7 @@ import android.view.LayoutInflater
 import androidx.appcompat.app.AppCompatActivity
 import com.techyourchance.dagger2course.Constants
 import com.techyourchance.dagger2course.networking.StackoverflowApi
+import com.techyourchance.dagger2course.questions.FetchQuestionDetailsUseCase
 import com.techyourchance.dagger2course.screens.common.ScreensNavigator
 import com.techyourchance.dagger2course.screens.common.dialogs.DialogsNavigator
 import com.techyourchance.dagger2course.screens.common.viewsmvc.QuestionDetailsViewMVC
@@ -27,6 +28,7 @@ class QuestionDetailsActivity : AppCompatActivity(), QuestionDetailsViewMVC.List
     private lateinit var questionDetailsViewMVC: QuestionDetailsViewMVC
     private lateinit var dialogsNavigator: DialogsNavigator
     private lateinit var screensNavigator: ScreensNavigator
+    private lateinit var fetchQuestionDetailsUseCase: FetchQuestionDetailsUseCase
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -44,6 +46,7 @@ class QuestionDetailsActivity : AppCompatActivity(), QuestionDetailsViewMVC.List
         questionId = intent.extras!!.getString(EXTRA_QUESTION_ID)!!
         dialogsNavigator = DialogsNavigator(supportFragmentManager)
         screensNavigator = ScreensNavigator(this)
+        fetchQuestionDetailsUseCase = FetchQuestionDetailsUseCase()
     }
 
     override fun onStart() {
@@ -62,31 +65,26 @@ class QuestionDetailsActivity : AppCompatActivity(), QuestionDetailsViewMVC.List
         coroutineScope.launch {
             questionDetailsViewMVC.showProgressIndication()
             try {
-                val response = stackoverflowApi.questionDetails(questionId)
-                if (response.isSuccessful && response.body() != null) {
-                    val questionBody = response.body()!!.question.body
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                        questionDetailsViewMVC.bindResult(
-                            Html.fromHtml(
-                                questionBody,
-                                Html.FROM_HTML_MODE_LEGACY
+                when (val result = fetchQuestionDetailsUseCase.fetchQuestionDetails(questionId)) {
+                    is FetchQuestionDetailsUseCase.Result.Success -> {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                            questionDetailsViewMVC.bindResult(
+                                Html.fromHtml(
+                                    result.question,
+                                    Html.FROM_HTML_MODE_LEGACY
+                                )
                             )
-                        )
-                    } else {
-                        @Suppress("DEPRECATION")
-                        questionDetailsViewMVC.bindResult(Html.fromHtml(questionBody))
+                        } else {
+                            @Suppress("DEPRECATION")
+                            questionDetailsViewMVC.bindResult(Html.fromHtml(result.question))
+                        }
                     }
-                } else {
-                    onFetchFailed()
-                }
-            } catch (t: Throwable) {
-                if (t !is CancellationException) {
-                    onFetchFailed()
+
+                    is FetchQuestionDetailsUseCase.Result.Failure -> onFetchFailed()
                 }
             } finally {
                 questionDetailsViewMVC.hideProgressIndication()
             }
-
         }
     }
 
