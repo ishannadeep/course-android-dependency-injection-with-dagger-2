@@ -1,6 +1,5 @@
 package com.techyourchance.dagger2course.screens.common.viewsmvc
 
-import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.TextView
@@ -19,8 +18,6 @@ class QuestionDetailsViewMVC(
     private var toolbar: MyToolbar
     private var swipeRefresh: SwipeRefreshLayout
     private var txtQuestionBody: TextView
-    private lateinit var listener: Listener
-
 
     interface Listener {
         fun onBackPress()
@@ -31,7 +28,11 @@ class QuestionDetailsViewMVC(
 
         // init toolbar
         toolbar = findViewById(R.id.toolbar)
-        toolbar.setNavigateUpListener { listener.onBackPress() }
+        toolbar.setNavigateUpListener {
+            for (listener: Listener in listeners) {
+                listener.onBackPress()
+            }
+        }
 
         // init pull-down-to-refresh (used as a progress indicator)
         swipeRefresh = findViewById(R.id.swipeRefresh)
