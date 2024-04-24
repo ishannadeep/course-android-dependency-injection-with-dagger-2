@@ -4,17 +4,14 @@ import com.techyourchance.dagger2course.networking.StackoverflowApi
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import retrofit2.Retrofit
 
 class FetchQuestionDetailsUseCase(
-    private val retrofit: Retrofit
+    private val stackoverflowApi: StackoverflowApi
 ) {
     sealed class Result {
         class Success(val question: String) : Result()
         object Failure : Result()
     }
-
-    private val stackoverflowApi: StackoverflowApi = retrofit.create(StackoverflowApi::class.java)
 
     suspend fun fetchQuestionDetails(questionId: String): Result {
         return withContext(Dispatchers.IO) {
