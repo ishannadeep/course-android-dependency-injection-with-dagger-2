@@ -16,9 +16,10 @@ class ActivityCompositionRoot(
         ScreensNavigator(activity)
     }
 
-    val dialogsNavigator: DialogsNavigator by lazy {
-        DialogsNavigator(activity.supportFragmentManager)
-    }
+    private val supportFragmentManager get() = activity.supportFragmentManager//create extra variable because if we want to change where we get supportFragmentManager we only need to change here
+
+    val dialogsNavigator get() = DialogsNavigator(supportFragmentManager)//by lazy is not needed because we don't keep any state in this obj
+
 
     private val stackoverflowApi get() = appCompositionRoot.stackoverflowApi
 
