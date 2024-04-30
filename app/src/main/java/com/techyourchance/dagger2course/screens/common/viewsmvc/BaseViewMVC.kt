@@ -14,8 +14,8 @@ open class BaseViewMVC<LISTENER_TYPE>(
 ) {
 
     val listeners = HashSet<LISTENER_TYPE>()
-    var rootView: View = inflater.inflate(layoutID, viewGroup)
-    protected val context: Context get() =  rootView.context
+    var rootView: View = inflater.inflate(layoutID, viewGroup, false)
+    protected val context: Context get() = rootView.context
 
     fun registerListeners(listener: LISTENER_TYPE) {
         listeners.add(listener)
