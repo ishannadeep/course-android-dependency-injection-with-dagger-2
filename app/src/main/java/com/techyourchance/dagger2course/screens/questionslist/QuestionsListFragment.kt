@@ -19,11 +19,15 @@ import kotlinx.coroutines.launch
 class QuestionsListFragment : BaseFragment(), QuestionsListViewMVC.Listener {
 
     private val coroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
-    private var isDataLoaded = false
-    private lateinit var viewMVC: QuestionsListViewMVC
+
     private lateinit var fetchQuestionsUseCase: FetchQuestionsUseCase
     private lateinit var dialogsNavigator: DialogsNavigator
     private lateinit var screensNavigator: ScreensNavigator
+
+    private lateinit var viewMVC: QuestionsListViewMVC
+
+    private var isDataLoaded = false
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
