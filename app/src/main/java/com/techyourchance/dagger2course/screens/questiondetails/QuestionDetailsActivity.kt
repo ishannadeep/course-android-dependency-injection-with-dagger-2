@@ -5,33 +5,40 @@ import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.text.Html
+import com.techyourchance.dagger2course.common.dependencyInjection.Service
 import com.techyourchance.dagger2course.questions.FetchQuestionDetailsUseCase
 import com.techyourchance.dagger2course.screens.common.ScreensNavigator
 import com.techyourchance.dagger2course.screens.common.activities.BaseActivity
 import com.techyourchance.dagger2course.screens.common.dialogs.DialogsNavigator
 import com.techyourchance.dagger2course.screens.common.viewsmvc.QuestionDetailsViewMVC
+import com.techyourchance.dagger2course.screens.common.viewsmvc.ViewMVCFactory
 import kotlinx.coroutines.*
 
 class QuestionDetailsActivity : BaseActivity(), QuestionDetailsViewMVC.Listener {
 
     private val coroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
 
+    @field:Service
     private lateinit var dialogsNavigator: DialogsNavigator
+
+    @field:Service
     private lateinit var screensNavigator: ScreensNavigator
+
+    @field:Service
     private lateinit var fetchQuestionDetailsUseCase: FetchQuestionDetailsUseCase
+
+    @field:Service
+    private lateinit var viewMVCFactory: ViewMVCFactory
 
     private lateinit var questionDetailsViewMVC: QuestionDetailsViewMVC
 
     private lateinit var questionId: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        injector.inject(this)
         super.onCreate(savedInstanceState)
-        questionDetailsViewMVC = compositionRoot.viewMvcFactory.newQuestionDetailsViewMVC(null)
+        questionDetailsViewMVC = viewMVCFactory.newQuestionDetailsViewMVC(null)
         setContentView(questionDetailsViewMVC.rootView)
-
-        dialogsNavigator = compositionRoot.dialogsNavigator
-        screensNavigator = compositionRoot.screensNavigator
-        fetchQuestionDetailsUseCase = compositionRoot.fetchQuestionDetailsUseCase
 
         questionId = intent.extras!!.getString(EXTRA_QUESTION_ID)!!
     }

@@ -4,12 +4,14 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.techyourchance.dagger2course.common.dependencyInjection.Service
 import com.techyourchance.dagger2course.questions.FetchQuestionsUseCase
 import com.techyourchance.dagger2course.questions.Question
 import com.techyourchance.dagger2course.screens.common.ScreensNavigator
 import com.techyourchance.dagger2course.screens.common.dialogs.DialogsNavigator
 import com.techyourchance.dagger2course.screens.common.fragments.BaseFragment
 import com.techyourchance.dagger2course.screens.common.viewsmvc.QuestionsListViewMVC
+import com.techyourchance.dagger2course.screens.common.viewsmvc.ViewMVCFactory
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -20,9 +22,17 @@ class QuestionsListFragment : BaseFragment(), QuestionsListViewMVC.Listener {
 
     private val coroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
 
+    @field:Service
     private lateinit var fetchQuestionsUseCase: FetchQuestionsUseCase
+
+    @field:Service
     private lateinit var dialogsNavigator: DialogsNavigator
+
+    @field:Service
     private lateinit var screensNavigator: ScreensNavigator
+
+    @field:Service
+    private lateinit var viewMVCFactory: ViewMVCFactory
 
     private lateinit var viewMVC: QuestionsListViewMVC
 
@@ -31,9 +41,7 @@ class QuestionsListFragment : BaseFragment(), QuestionsListViewMVC.Listener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        fetchQuestionsUseCase = compositionRoot.fetchQuestionsUseCase
-        dialogsNavigator = compositionRoot.dialogsNavigator
-        screensNavigator = compositionRoot.screensNavigator
+        injector.inject(this)
     }
 
     override fun onCreateView(
@@ -41,7 +49,7 @@ class QuestionsListFragment : BaseFragment(), QuestionsListViewMVC.Listener {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        viewMVC = compositionRoot.viewMvcFactory.newQuestionListViewMvc(container)
+        viewMVC = viewMVCFactory.newQuestionListViewMvc(container)
         return viewMVC.rootView
     }
 

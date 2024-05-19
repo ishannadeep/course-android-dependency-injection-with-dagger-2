@@ -1,4 +1,4 @@
-package com.techyourchance.dagger2course.common.composition
+package com.techyourchance.dagger2course.common.dependencyInjection
 
 import androidx.annotation.UiThread
 import com.techyourchance.dagger2course.Constants
@@ -16,8 +16,5 @@ class AppCompositionRoot {
             .build()
     }
 
-
     val stackoverflowApi: StackoverflowApi = retrofit.create(StackoverflowApi::class.java)
-
-
 }
